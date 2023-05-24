@@ -40,6 +40,13 @@ def process_logs(logs):
             first_log = (parsed_log[0], parsed_log[2])
             break
 
+    last_log = None
+    for log in logs[::-1]:
+        parsed_log = parse_log(log)
+        if parsed_log:
+            last_log = (parsed_log[0], parsed_log[2])
+            break
+
     for log in logs:
         parsed_log = parse_log(log)
         if parsed_log:
@@ -52,6 +59,7 @@ def process_logs(logs):
         last_timestamp = None
         last_action = None
         unused_start = None
+        counter = 1
 
         for log in user_logs:
             timestamp = log[0]
@@ -71,13 +79,29 @@ def process_logs(logs):
                     if first_log:
                         user_data.append((timestamp - first_log[0]).total_seconds())
 
-            elif last_action != "Start" and action == "Start" and len(user_logs) == 1:
+            elif (
+                last_action != "Start"
+                and action == "Start"
+                and len(user_logs) == counter
+            ):
                 user_data.append((timestamp - timestamp).total_seconds())
 
             elif last_action == "Start" and action == "End":
                 user_data.append((timestamp - last_timestamp).total_seconds())
 
+            elif action != "End":
+                if counter == 1 or counter == len(user_logs):
+                    print("<", user_name, last_action, action, timestamp, counter)
+                    user_data.append((last_log[0] - timestamp).total_seconds())
+                else:
+                    print(">", user_name, last_action, action, timestamp, counter)
+                    user_data.append((timestamp - timestamp).total_seconds())
+            else:
+                pass
+                # print(user_name, last_action, action, timestamp, counter)
+
             last_timestamp, last_action = timestamp, action
+            counter += 1
 
         all_data[user_name] = {
             "session": len(user_data),
