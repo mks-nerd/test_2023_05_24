@@ -1,5 +1,5 @@
 from datetime import datetime
-from main import read_file, parse_log, process_logs, generate_report, print_report
+from main import read_file, parse_log, process_logs, generate_report
 
 
 def test_read_file():
@@ -77,11 +77,11 @@ def test_print_report():
     expected_failed_result = "Usage: python main.py <file_path>"
 
     assert isinstance(fail, str)
-    assert result == expected_failed_result
+    assert fail == expected_failed_result
 
     result = run(["python", "main.py", "invalid_file"], capture_output=True, text=True)
     fail = result.stdout.strip()
     expected_failed_result = "Can't Read File"
 
     assert isinstance(fail, str)
-    assert result == expected_failed_result
+    assert fail == expected_failed_result
