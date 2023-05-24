@@ -2,11 +2,6 @@ import sys
 from datetime import datetime
 
 
-def generate_report(data_to_print):
-    for user_name, user_data in data_to_print.items():
-        print(user_name, user_data["session"], user_data["total_time"])
-
-
 def read_file(path: str) -> list[str] | None:
     """read txt file and returns a list of all lines"""
     try:
@@ -33,90 +28,71 @@ def parse_log(log: str) -> tuple[datetime, str, str] | None:
 
 def process_logs(logs):
     logs_by_user = {}
-    first_log = None
-    for log in logs:
-        parsed_log = parse_log(log)
-        if parsed_log:
-            first_log = (parsed_log[0], parsed_log[2])
-            break
+    data = {}
+    parsed_logs = [parse_log(log) for log in logs]
+    parsed_logs = [parsed_log for parsed_log in parsed_logs if parsed_log]
 
-    last_log = None
-    for log in logs[::-1]:
-        parsed_log = parse_log(log)
-        if parsed_log:
-            last_log = (parsed_log[0], parsed_log[2])
-            break
+    if len(parsed_logs) == 0:
+        return None
+    first_parsed_log = parsed_logs[0][0]
+    last_parsed_log = parsed_logs[-1][0]
 
-    for log in logs:
-        parsed_log = parse_log(log)
-        if parsed_log:
-            user_logs = logs_by_user.setdefault(parsed_log[1], [])
-            user_logs.append([parsed_log[0], parsed_log[2]])
+    for parsed_log in parsed_logs:
+        timestamp, user, action = parsed_log
+        user = logs_by_user.setdefault(user, {})
+        action = user.setdefault(action, [])
+        action.append(timestamp)
 
-    all_data = {}
-    for user_name, user_logs in logs_by_user.items():
-        user_data = []
-        last_timestamp = None
-        last_action = None
-        unused_start = None
-        counter = 1
+    for keys, items in logs_by_user.items():
+        start_items = items.setdefault("Start", [])
+        end_items = items.setdefault("End", [])
 
-        for log in user_logs:
-            timestamp = log[0]
-            action = log[1]
+        for start, end in zip(start_items, end_items):
+            if start > end:
+                start_items.insert(0, first_parsed_log)
 
-            if last_action == "End" and action == "Start":
-                if unused_start is None:
-                    unused_start = log
-                else:
-                    user_data.append((timestamp - timestamp).total_seconds())
+        start_items_length = len(start_items)
+        end_items_length = len(end_items)
 
-            elif last_action != "Start" and action == "End":
-                if unused_start:
-                    user_data.append((timestamp - unused_start[0]).total_seconds())
-                    unused_start = None
-                else:
-                    if first_log:
-                        user_data.append((timestamp - first_log[0]).total_seconds())
-
-            elif (
-                last_action != "Start"
-                and action == "Start"
-                and len(user_logs) == counter
-            ):
-                user_data.append((timestamp - timestamp).total_seconds())
-
-            elif last_action == "Start" and action == "End":
-                user_data.append((timestamp - last_timestamp).total_seconds())
-
-            elif action != "End":
-                if counter == 1 or counter == len(user_logs):
-                    print("<", user_name, last_action, action, timestamp, counter)
-                    user_data.append((last_log[0] - timestamp).total_seconds())
-                else:
-                    print(">", user_name, last_action, action, timestamp, counter)
-                    user_data.append((timestamp - timestamp).total_seconds())
+        while start_items_length != end_items_length:
+            if start_items_length > end_items_length:
+                end_items.append(last_parsed_log)
+                end_items_length += 1
             else:
-                pass
-                # print(user_name, last_action, action, timestamp, counter)
+                start_items.insert(0, first_parsed_log)
+                start_items_length += 1
 
-            last_timestamp, last_action = timestamp, action
-            counter += 1
+    for user, items in logs_by_user.items():
+        user = data.setdefault(user, [])
+        for start, end in zip(items.get("Start"), items.get("End")):
+            user.append((end - start).total_seconds())
 
-        all_data[user_name] = {
-            "session": len(user_data),
-            "total_time": int(sum(user_data)),
-        }
+    return data
 
-    return all_data
+
+def generate_report(path):
+    text_to_print = ""
+    all_logs = read_file(path=path)
+    if all_logs is None:
+        return "Can't Read File"
+    summary = process_logs(logs=all_logs)
+    if summary is None:
+        return text_to_print
+    for user_name, user_data in summary.items():
+        text = f"{user_name} {len(user_data)} {int(sum(user_data))}\n"
+        text_to_print += text
+    text_to_print = text_to_print.strip()
+    return text_to_print
+
+
+def print_report():
+    if len(sys.argv) < 2:
+        print("Usage: python main.py <file_path>")
+        sys.exit(1)
+    file_paths = sys.argv[1:]
+    for file_path in file_paths:
+        print(generate_report(path=file_path))
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python fair_billing.py <file_path>")
-        sys.exit(1)
-
-    file_path = sys.argv[1]
-    all_logs = read_file(path=file_path)
-    data = process_logs(logs=all_logs)
-    generate_report(data_to_print=data)
+    print_report()
