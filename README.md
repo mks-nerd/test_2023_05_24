@@ -4,8 +4,8 @@ This is a test repository created on May 24, 2023, for generating a report out o
 
 ## Table of Contents
 - [Introduction](#introduction)
-- [Installation](#installation)
 - [Code-Flow](#Code-Flow)
+- [Installation](#installation)
 - [Usage](#usage)
 - [Contributing](#contributing)
 - [License](#license)
