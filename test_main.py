@@ -1,10 +1,11 @@
 from datetime import datetime
 from main import read_file, parse_log, process_logs, generate_report
 
+DATA_FILE_PATH: str = "test_data.txt"
+
 
 def test_read_file():
-    path = "tests/data_test.txt"
-    data = read_file(path=path)
+    data = read_file(path=DATA_FILE_PATH)
     assert isinstance(data, list)
     assert isinstance(data[0], str)
     assert len(data) == 11
@@ -30,8 +31,7 @@ def test_parse_log():
 
 
 def test_process_logs():
-    path = "tests/data_test.txt"
-    data = read_file(path=path)
+    data = read_file(path=DATA_FILE_PATH)
     data = process_logs(data)
 
     expected_data = {"ALICE99": [31.0, 92.0, 67.0, 50.0], "CHARLIE": [2.0, 35.0, 0.0]}
@@ -45,14 +45,13 @@ def test_process_logs():
 
 
 def test_generate_report():
-    path = "tests/data_test.txt"
-    data = generate_report(path)
+    data = generate_report(DATA_FILE_PATH)
     expected_result = "ALICE99 4 240\nCHARLIE 3 37"
 
     assert isinstance(data, str)
     assert data == expected_result
 
-    path = "tests/data_test"
+    path = "data_test"
     fail = generate_report(path)
     expected_failed_result = "Can't Read File"
 
@@ -63,9 +62,7 @@ def test_generate_report():
 def test_print_report():
     from subprocess import run
 
-    result = run(
-        ["python", "main.py", "tests/data_test.txt"], capture_output=True, text=True
-    )
+    result = run(["python", "main.py", "test_data.txt"], capture_output=True, text=True)
     result = result.stdout.strip()
     expected_result = "ALICE99 4 240\nCHARLIE 3 37"
 
