@@ -1,6 +1,6 @@
 # test_2023_05_24
 
-This is a test repository created on May 24, 2023, for experimental purposes.
+This is a test repository created on May 24, 2023, for generating report out of logs file(s).
 
 ## Table of Contents
 - [Introduction](#introduction)
@@ -37,22 +37,26 @@ To run the script and generate the report, follow these steps:
 
 1. Make sure you have a log file containing the necessary data.
 
-2. Open the script file, `log_parser.py`, in a text editor.
+2. Open a terminal or command prompt and navigate to the project's root directory.
 
-3. Modify the script to provide the correct path to your log file. You can usually find this information in the code comments or at the beginning of the script.
-
-4. Save the modified script.
-
-5. Open a terminal or command prompt and navigate to the project's root directory.
-
-6. Run the script using the Python interpreter:
+3. Run the script using the Python interpreter:
    ```
-   python log_parser.py
+   python main.py location/to/file.txt
    ```
 
-7. The script will process the log file and generate a report with the users, the number of sessions, and the minimum possible total duration of their sessions in seconds. The report will be printed to the console.
+4. The script will process the log file and generate a report with the users, the number of sessions, and the minimum possible total duration of their sessions in seconds. The report will be printed to the console.
 
-8. Review the generated report to analyze the data.
+5. Review the generated report to analyze the data.
+6. Run tests from terminal using:
+   ```
+   # Required: Virtual Environment with dependecies installed from requirments.txt
+   
+   coverage run -m pytest
+   ```
+7. View the tests coverage using:
+   ```
+   coverage report
+   ```
 
 Feel free to modify the script or customize it according to your specific requirements.
 
@@ -62,4 +66,4 @@ Contributions to this repository are currently not accepted as it is meant for p
 
 ## License
 
-The content of this repository is not bound by any specific license. It is provided as-is for learning and experimental purposes. For more details, please refer to the [LICENSE](LICENSE) file if present, or contact the repository owner for clarification.
+The content of this repository is not bound by any specific license. It is provided as-is for learning and experimental purposes. For more details, please contact the repository owner for clarification.
