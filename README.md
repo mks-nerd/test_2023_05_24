@@ -1,6 +1,6 @@
 # Fair Billing
 
-This is a test repository created on May 24, 2023, for generating report out of logs file(s).
+This is a test repository created on May 24, 2023, for generating a report out of log file(s).
 
 ## Table of Contents
 - [Introduction](#introduction)
@@ -9,6 +9,7 @@ This is a test repository created on May 24, 2023, for generating report out of 
 - [Usage](#usage)
 - [Contributing](#contributing)
 - [License](#license)
+- [Notes](#Notes)
 
 ## Introduction
 
@@ -80,13 +81,13 @@ To run the script and generate the report, follow these steps:
 4. The script will process the log file and generate a report with the users, the number of sessions, and the minimum possible total duration of their sessions in seconds. The report will be printed to the console.
 
 5. Review the generated report to analyze the data.
-6. Run tests from terminal using:
+6. Run tests from the terminal using:
    ```
    # Required: Virtual Environment with dependecies installed from requirments.txt
    
    coverage run -m pytest
    ```
-7. View the tests coverage using:
+7. View the test coverage using:
    ```
    coverage report
    ```
@@ -99,4 +100,17 @@ Contributions to this repository are currently not accepted as it is meant for p
 
 ## License
 
-The content of this repository is not bound by any specific license. It is provided as-is for learning and experimental purposes. For more details, please contact the repository owner for clarification.
+Any specific license does not bind the content of this repository.
+It is provided as-is for submitting test purpose.
+For more details, please contact the repository owner for clarification.
+
+## Notes
+
+1. Action Validation
+   - User actions must be either "Start" or "End". The utility will discard Any action other than these two values.
+
+2. Timestamp Validation
+   - The utility validates timestamps to ensure they are in a valid time format. If a timestamp is not a valid time, it will be discarded by the utility. 
+
+3. Username Validation
+   - No validation is currently performed on the username. It is assumed that the username provided is valid and does not require any specific format or restrictions.
