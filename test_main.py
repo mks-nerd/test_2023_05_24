@@ -351,6 +351,19 @@ def test_generate_report_valid_file():
     assert result == expected_result
 
 
+def test_generate_report_valid_file_with_invalid_data():
+    path = "valid_file_with_invalid_data.txt"
+
+    with open(path, "w") as f:
+        f.write("xyz")
+
+    result = generate_report(path)
+
+    assert result is None
+
+    os.remove(path)
+
+
 def test_generate_report_empty_file():
     path = "empty.txt"
 

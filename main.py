@@ -237,11 +237,19 @@ def process_logs(logs: List[str]) -> Optional[Dict[str, List[float]]]:
         parsed_logs=parsed_logs
     )
 
+    # This line will never execute; suppress MyPy error
+    if logs_by_user is None:
+        return None
+
     logs_by_user = make_equal_bin_size(
         logs_by_user=logs_by_user,
         first_log=parsed_logs[0][0],
         last_log=parsed_logs[-1][0],
     )
+
+    # This line will never execute; suppress MyPy error
+    if logs_by_user is None:
+        return None
 
     data: Optional[Dict[str, List[float]]] = calculate_log_time(
         logs_by_user=logs_by_user
@@ -267,7 +275,10 @@ def generate_report(path: str) -> Optional[str]:
     if all_logs is None:
         return None
 
-    summary: Optional[Dict] = process_logs(logs=all_logs)
+    summary: Optional[Dict[str, List[float]]] = process_logs(logs=all_logs)
+
+    if summary is None:
+        return None
 
     for user_name, user_data in summary.items():
         text: str = f"{user_name} {len(user_data)} {int(sum(user_data))}\n"
