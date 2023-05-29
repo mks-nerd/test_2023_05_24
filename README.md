@@ -29,24 +29,31 @@ Invalid or irrelevant lines in the log file should be ignored during the calcula
 ## Code-Flow
 The `main.py` file contains a script for generating and printing a report based on log files. Here's the flow of the code:
 
-1. The necessary modules are imported:
-   - `sys` for system-related functionality.
-   - `datetime` for working with date and time objects.
+1. The main module defines various functions for different tasks such as reading a file, validating usernames, parsing log entries, organizing logs, calculating log times, and generating reports.
 
-2. The `read_file` function is defined. It takes a file path as input, attempts to open and read the file, and returns a list of all the lines read from the file. If the file is not found, it returns `None`.
+2. The `read_file` function reads the contents of a file specified by the path and returns the lines as a list of strings.
 
-3. The `parse_log` function is defined. It takes a log string as input and attempts to parse it into a tuple containing a `datetime` object, a username, and an action. If the log cannot be parsed due to incorrect formatting, it returns `None`.
+3. The `validate_username` function checks if a username string is valid by matching it against a regular expression pattern.
 
-4. The `process_logs` function is defined. It takes a list of log strings as input and processes them to generate a summary of the logs. It returns a dictionary where the keys are usernames, and the values are lists of durations (in seconds) for each user's actions. If the log list is empty or cannot be parsed, it returns `None`.
+4. The `parse_log` function parses a log entry string and extracts the timestamp, username, and action. It returns a tuple containing the parsed data or None if the log entry is invalid.
 
-5. The `generate_report` function is defined. It takes a file path as input, reads the log file using the `read_file` function, processes the logs using the `process_logs` function, and generates a report based on the processed data. The report is returned as a string.
+5. The `parse_all_logs` function takes a list of log entry strings, iterates over them, and parses each log using the `parse_log` function. It returns a list of tuples containing the parsed log data or None if no valid log entries were found.
 
-6. The `print_report` function is defined. It checks if the script is executed with the correct command-line arguments (at least one file path) and calls the `generate_report` function for each file path provided. It then prints the generated reports.
+6. The `create_bin` function creates a nested dictionary structure to organize the parsed logs by user and action.
 
-7. The script entry point is checked using the `__name__ == "__main__"` condition. If the script is being executed directly (not imported as a module), it calls the `print_report` function.
+7. The `make_equal_bin_size` function adjusts the bin sizes for start and end logs of each user to ensure equal lengths by padding with the first and last log if necessary.
 
-In summary, this script reads log files, processes the logs to generate a summary, and prints a report with the number of actions and total durations for each user. Multiple file paths can be provided as command-line arguments.
+8. The `calculate_log_time` function calculates the time duration for each user's log entries based on the start and end timestamps.
 
+9. The `process_logs` function performs the processing steps by calling the above functions in sequence. It returns a dictionary where the keys are usernames and the values are lists of durations, or None if the input logs are None or the processing steps result in empty data.
+
+10. The `generate_report` function generates a report based on the log data provided in a file. It reads the file using `read_file`, processes the logs using `process_logs`, and generates a string representation of the report.
+
+11. The `print_report` function prints the generated report for each specified log file path. It takes the file paths as command-line arguments, calls `generate_report` for each path, and prints the report if it is not None.
+
+12. Finally, the code checks if the module is being executed as the main script (`__name__ == "__main__"`) and calls the `print_report` function.
+
+Overall, the code reads log files, processes the logs, calculates log times, and generates reports based on the log data.
 ## Installation
 
 To use the script in this repository, follow the instructions below:
@@ -71,23 +78,37 @@ To run the script and generate the report, follow these steps:
 
 1. Make sure you have a log file containing the necessary data.
 
-2. Open a terminal or command prompt and navigate to the project's root directory.
+2. Make sure you have `python --version #python >= 3.7` installed.
 
-3. Run the script using the Python interpreter:
+3. Open a terminal or command prompt and navigate to the project's root directory.
+
+4. Run the script using the Python interpreter:
    ```
-   python main.py location/to/file.txt
+   python main.py test_data.txt
    ```
+   or 
+   ```
+   python3 main.py test_data.txt
+   ```
+   or
+   ```
+   py main.py test_data.txt
+   ```
+   The Output will be
+   ```
+   ALICE99 4 240
+   CHARLIE 3 37
+   ```
+5. The script will process the log file and generate a report with the users, the number of sessions, and the minimum possible total duration of their sessions in seconds. The report will be printed to the console.
 
-4. The script will process the log file and generate a report with the users, the number of sessions, and the minimum possible total duration of their sessions in seconds. The report will be printed to the console.
-
-5. Review the generated report to analyze the data.
-6. Run tests from the terminal using:
+6. Review the generated report to analyze the data.
+7. Run tests from the terminal using:
    ```
    # Required: Virtual Environment with dependecies installed from requirments.txt
    
    coverage run -m pytest
    ```
-7. View the test coverage using:
+8. View the test coverage using:
    ```
    coverage report
    ```
@@ -110,7 +131,7 @@ For more details, please contact the repository owner for clarification.
    - User actions must be either "Start" or "End". The utility will discard Any action other than these two values.
 
 2. Timestamp Validation
-   - The utility validates timestamps to ensure they are in a valid time format. If a timestamp is not a valid time, it will be discarded by the utility. 
+   - Validates timestamps to ensure they are in a valid time format. If a timestamp is not a valid time, it will be discarded by the utility. 
 
 3. Username Validation
-   - No validation is currently performed on the username. It is assumed that the username provided is valid and does not require any specific format or restrictions.
+   - Validates the given username string to ensure it consists of alphanumeric characters with no specific length criteria.
