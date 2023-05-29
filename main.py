@@ -18,7 +18,8 @@ def read_file(path: str) -> Optional[List[str]]:
         path (str): The path to the file.
 
     Returns:
-        Optional[List[str]]: A list of strings representing the lines of the file. None if there was an error while reading the file.
+        Optional[List[str]]: A list of strings representing the lines of the file.
+        None if there was an error while reading the file.
     """
     try:
         with open(path, encoding="utf-8") as file:
@@ -227,9 +228,6 @@ def process_logs(logs: List[str]) -> Optional[Dict[str, List[float]]]:
         (in seconds) between start and end timestamps for each user's log entries.
         None if the input logs are None or the processing steps result in empty data.
     """
-    if logs is None:
-        return None
-
     parsed_logs: Optional[List[Tuple[datetime, str, str]]] = parse_all_logs(logs=logs)
 
     if parsed_logs is None:
@@ -239,17 +237,11 @@ def process_logs(logs: List[str]) -> Optional[Dict[str, List[float]]]:
         parsed_logs=parsed_logs
     )
 
-    if logs_by_user is None:
-        return None
-
     logs_by_user = make_equal_bin_size(
         logs_by_user=logs_by_user,
         first_log=parsed_logs[0][0],
         last_log=parsed_logs[-1][0],
     )
-
-    if logs_by_user is None:
-        return None
 
     data: Optional[Dict[str, List[float]]] = calculate_log_time(
         logs_by_user=logs_by_user
@@ -276,9 +268,6 @@ def generate_report(path: str) -> Optional[str]:
         return None
 
     summary: Optional[Dict] = process_logs(logs=all_logs)
-
-    if summary is None:
-        return None
 
     for user_name, user_data in summary.items():
         text: str = f"{user_name} {len(user_data)} {int(sum(user_data))}\n"
